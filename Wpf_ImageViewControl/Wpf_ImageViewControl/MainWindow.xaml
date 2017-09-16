@@ -1,0 +1,17 @@
+﻿<Window x:Class="Wpf_ImageViewControl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Wpf_ImageViewControl"
+        mc:Ignorable="d" WindowState="Maximized"
+        Title="图片查看" Height="800" Width="1000">
+
+    <Grid>
+        <local:ImageView>
+            <local:ImageView.ImageSource>
+                <BitmapImage UriSource="pack://application:,,,/Wpf_ImageViewControl;component/Images/test1.jpg"></BitmapImage>
+            </local:ImageView.ImageSource>
+        </local:ImageView>
+    </Grid>
+</Window>
