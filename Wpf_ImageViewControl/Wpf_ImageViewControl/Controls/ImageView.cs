@@ -110,7 +110,11 @@ namespace Wpf_ImageViewControl
             this.CalculateImageScale();
         }
 
-        //为Image控件计算一个适宜的位置
+        /// <summary>
+        /// 为Image控件计算一个适宜的位置
+        /// </summary>
+        /// <param name="isMagnify">是否为放大</param>
+        /// <param name="currentPosition">当前鼠标相对于Image控件的位置</param>
         private void CalculateImagePosition(bool isMagnify, Point currentPosition)
         {
             double topOffset = currentPosition.Y * scaleIncrement;
