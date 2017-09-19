@@ -58,7 +58,8 @@ namespace Wpf_ImageViewControl
         private Point? initMousePosition = null;
         private void ImageControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var element = (UIElement)sender;
+            var element = (FrameworkElement)sender;
+            element.Cursor = System.Windows.Input.Cursors.SizeAll;
             initMousePosition = e.GetPosition(element);
             element.CaptureMouse();
         }
@@ -76,7 +77,8 @@ namespace Wpf_ImageViewControl
 
         private void ImageControl_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var element = (UIElement)sender;
+            var element = (FrameworkElement)sender;
+            element.Cursor = System.Windows.Input.Cursors.Hand;
             initMousePosition = null;
             element.ReleaseMouseCapture();
         }
