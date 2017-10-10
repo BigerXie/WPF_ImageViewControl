@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,15 +20,24 @@ namespace Wpf_ImageViewControl
     [TemplatePart(Name = Part_MainCanvas, Type = typeof(Canvas))]
     [TemplatePart(Name = Part_Image, Type = typeof(Image))]
     [TemplatePart(Name = Part_Label, Type = typeof(TipLabel))]
+    [TemplatePart(Name = Part_ActualSizeMenuItem, Type = typeof(MenuItem))]
+    [TemplatePart(Name = Part_FitScreenMenuItem, Type = typeof(MenuItem))]
+    [TemplatePart(Name = Part_SaveAsMenuItem, Type = typeof(MenuItem))]
     public class ImageView : Control
     {
         private const string Part_Image = "Part_Image";
         private const string Part_MainCanvas = "Part_MainCanvas";
         private const string Part_Label = "Part_Label";
+        private const string Part_ActualSizeMenuItem = "Part_ActualSizeMenuItem";
+        private const string Part_FitScreenMenuItem = "Part_FitScreenMenuItem";
+        private const string Part_SaveAsMenuItem = "Part_SaveAsMenuItem";
 
         internal Image ImageControl;
         internal Canvas MainCanvas;
         internal TipLabel ScaleLabel;
+        internal MenuItem ActualSizeMenuItem;
+        internal MenuItem FitScreenMenuItem;
+        internal MenuItem SaveAsMenuItem;
 
         static ImageView()
         {
@@ -53,7 +64,78 @@ namespace Wpf_ImageViewControl
             this.ImageControl.MouseMove += ImageControl_MouseMove;
             this.ImageControl.MouseDown += ImageControl_MouseDown;
             this.MainCanvas.MouseWheel += MainCanvas_MouseWheel;
+            this.InitializeContextMenuItem();
         }
+
+        private void InitializeContextMenuItem()
+        {
+            this.ActualSizeMenuItem = GetTemplateChild(Part_ActualSizeMenuItem) as MenuItem;
+            this.ActualSizeMenuItem.Click += ActualSizeMenuItem_Click;
+            this.FitScreenMenuItem = GetTemplateChild(Part_FitScreenMenuItem) as MenuItem;
+            this.FitScreenMenuItem.Click += FitScreenMenuItem_Click;
+            this.SaveAsMenuItem = GetTemplateChild(Part_SaveAsMenuItem) as MenuItem;
+            this.SaveAsMenuItem.Click += SaveAsMenuItem_Click;
+        }
+
+        private void ActualSizeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.ActualHeight <= 0 || this.ActualWidth <= 0 || this.ImageControl == null || this.ImageSource == null)
+                return;
+            this.ImageControl.Height = this.ImageSource.PixelHeight;
+            this.ImageControl.Width = this.ImageSource.PixelWidth;
+            var top = (this.ActualHeight / 2) - (this.ImageControl.Height / 2);
+            var left = (this.ActualWidth / 2) - (this.ImageControl.Width / 2);
+            this.SetImagePosition(top, left);
+            this.CalculateImageScale();
+        }
+
+        private void FitScreenMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            this.InitImageControl();
+        }
+
+        private void SaveAsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.ImageSource == null)
+                return;
+            var saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "JPG(*.jpg)|*.jpg|PNG(*.png)|*.png|BMP(*.bmp)|*.bmp";
+            saveDialog.FileName = "New Image";
+            saveDialog.Title = "图片另存为";
+            var dialogResult = saveDialog.ShowDialog();
+            if (dialogResult != true)
+                return;
+            var extensionName = System.IO.Path.GetExtension(saveDialog.FileName);
+            var encoder = this.GetBitmapEncoder(extensionName);
+            if (encoder == null)
+                return;
+            encoder.Frames.Add(BitmapFrame.Create(this.ImageSource));
+            using (var fileStream = new FileStream(saveDialog.FileName, FileMode.Create, FileAccess.Write))
+            {
+                encoder.Save(fileStream);
+            }
+        }
+
+        private BitmapEncoder GetBitmapEncoder(string extensionName)
+        {
+            if(string.Equals(extensionName,".JPG",StringComparison.OrdinalIgnoreCase))
+            {
+                return new System.Windows.Media.Imaging.JpegBitmapEncoder();
+            }
+            else if (string.Equals(extensionName, ".PNG", StringComparison.OrdinalIgnoreCase))
+            {
+                return new System.Windows.Media.Imaging.PngBitmapEncoder();
+            }
+            else if (string.Equals(extensionName, ".BMP", StringComparison.OrdinalIgnoreCase))
+            {
+                return new System.Windows.Media.Imaging.BmpBitmapEncoder();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
 
         private Point? initMousePosition = null;
         private void ImageControl_MouseDown(object sender, MouseButtonEventArgs e)
@@ -207,6 +289,5 @@ namespace Wpf_ImageViewControl
             var rate = (this.ImageControl.Height * this.ImageControl.Width) / (this.ImageSource.PixelHeight * this.ImageSource.PixelWidth);
             this.ScaleLabel.Content = rate.ToString("0%");
         }
-
     }
 }

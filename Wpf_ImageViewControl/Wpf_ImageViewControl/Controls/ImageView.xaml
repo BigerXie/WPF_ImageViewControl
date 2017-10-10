@@ -7,6 +7,13 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:ImageView}">
                     <Grid>
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="实际大小" x:Name="Part_ActualSizeMenuItem"/>
+                                <MenuItem Header="缩放以适应屏幕" x:Name="Part_FitScreenMenuItem"/>
+                                <MenuItem Header="图片另存为" x:Name="Part_SaveAsMenuItem"/>
+                            </ContextMenu>
+                        </Grid.ContextMenu>
                         <Canvas x:Name="Part_MainCanvas" Background="#F0F0F0" ClipToBounds="True">
                             <Image x:Name="Part_Image" Cursor="Hand" Source="{TemplateBinding ImageSource}"/>
                         </Canvas>
