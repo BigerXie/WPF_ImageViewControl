@@ -118,7 +118,7 @@ namespace Wpf_ImageViewControl
 
         private BitmapEncoder GetBitmapEncoder(string extensionName)
         {
-            if(string.Equals(extensionName,".JPG",StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(extensionName, ".JPG", StringComparison.OrdinalIgnoreCase))
             {
                 return new System.Windows.Media.Imaging.JpegBitmapEncoder();
             }
@@ -167,6 +167,8 @@ namespace Wpf_ImageViewControl
 
         //缩放的比例
         private double scaleIncrement = 0.1;
+        //缩放的最小宽高
+        private double minWidthHeight = 50.0;
         private void MainCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             //鼠标相对于Image控件的位置
@@ -185,8 +187,10 @@ namespace Wpf_ImageViewControl
             }
             else
             {
-                height = height * (1 - scaleIncrement);
-                width = width * (1 - scaleIncrement);
+                var shrinkHeight = height * (1 - scaleIncrement);
+                height = shrinkHeight < minWidthHeight ? minWidthHeight : shrinkHeight;
+                var shrinkWidth = width * (1 - scaleIncrement);
+                width = shrinkWidth < minWidthHeight ? minWidthHeight : shrinkWidth;
             }
             this.ImageControl.Height = height;
             this.ImageControl.Width = width;
