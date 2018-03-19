@@ -5,8 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_ImageViewControl"
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        Icon="pack://application:,,,/Wpf_ImageViewControl;component/Images/logo.ico"
         mc:Ignorable="d" WindowState="Maximized"
         Title="图片查看" Height="800" Width="1000">
+    <metro:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <Image Source="{Binding}" Height="20" Width="20" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
+        </DataTemplate>
+    </metro:MetroWindow.IconTemplate>
 
     <Grid>
         <Grid.RowDefinitions>
